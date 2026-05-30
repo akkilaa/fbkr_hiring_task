@@ -4,8 +4,10 @@ import { useBottomSheet } from '@/bottom-sheet/BottomSheetProvider'
 import Icon from '@/components/atoms/Icon'
 import SafeScrollView from '@/components/atoms/SafeScrollView'
 import CharterDescription from '@/components/molecules/CharterDescription'
+import { CharterPackages } from '@/components/molecules/CharterPackageCard'
 import ImageGallery from '@/components/molecules/ImageGallery'
 import DropdownButton from '@/components/organisms/DropdownButton'
+import { useAvailablePackages } from '@/hooks/useAvailablePackages'
 import { useCharter, useCharterPhotos } from '@/hooks/useCharters'
 import { formatBookingGuests, useCharterBookingStore } from '@/store/charterBookingStore'
 import { formatBookingDate } from '@/utils/dateUtils'
@@ -16,23 +18,28 @@ type Props = {
 }
 
 const CharterScreen = ({ charterNumber }: Props) => {
-  const { data: charter } = useCharter(charterNumber)
-  const { data: photos = [] } = useCharterPhotos(charterNumber)
+  const { data: charter, isLoading: isCharterLoading } = useCharter(charterNumber)
+  const { data: photos = [], isLoading: isPhotosLoading } = useCharterPhotos(charterNumber)
   const { present } = useBottomSheet()
   const { date, adults, children } = useCharterBookingStore()
+  const { data: packages, isLoading: isPackagesLoading } = useAvailablePackages(
+    charterNumber,
+    date,
+    adults,
+    children,
+  )
 
   return (
     <SafeScrollView style={{ backgroundColor: '#ffffff' }}>
-      <ImageGallery photos={photos} />
-      {charter && (
-        <CharterDescription
-          title={charter.title}
-          location={charter.city}
-          description={charter.description}
-          rating={4.9}
-          reviewCount={784}
-        />
-      )}
+      <ImageGallery loading={isPhotosLoading} photos={photos} />
+      <CharterDescription
+        loading={isCharterLoading || !charter}
+        title={charter?.title}
+        location={charter?.city}
+        description={charter?.description}
+        rating={4.9}
+        reviewCount={784}
+      />
       <View style={styles.dropdowns}>
         <DropdownButton
           label="Date"
@@ -49,6 +56,11 @@ const CharterScreen = ({ charterNumber }: Props) => {
           onPress={() => present('chooseCharterGuests', {})}
         />
       </View>
+      <CharterPackages
+        loading={isPackagesLoading}
+        packages={packages}
+        onChangeDate={() => present('chooseCharterDate', {})}
+      />
     </SafeScrollView>
   )
 }

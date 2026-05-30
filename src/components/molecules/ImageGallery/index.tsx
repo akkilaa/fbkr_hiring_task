@@ -1,3 +1,4 @@
+import { withSkeleton } from '@/hoc/withSkeleton'
 import { CharterPhoto } from '@/services/charter/charterPhoto.types'
 import { Image } from 'expo-image'
 import { useCallback, useRef } from 'react'
@@ -6,6 +7,7 @@ import { Dots } from './Dots'
 import { useActiveGalleryIndex } from './hooks/useActiveGalleryIndex'
 import { useHorizontalListLayout } from './hooks/useHorizontalListLayout'
 import { usePhotoPreloader } from './hooks/usePhotoPreloader'
+import ImageGallerySkeleton from './Skeleton'
 
 interface ImageGalleryProps {
   photos: CharterPhoto[]
@@ -79,4 +81,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default ImageGallery
+export default withSkeleton(ImageGallery, ImageGallerySkeleton)

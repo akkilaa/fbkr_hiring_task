@@ -62,6 +62,55 @@ export const Spacing = {
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0
 export const MaxContentWidth = 800
 
+export type ButtonSize = 'xl' | 'lg' | 'md' | 'sm' | 'xs'
+
+export const buttonSizes: Record<
+  ButtonSize,
+  {
+    paddingVertical: number
+    paddingHorizontal: number
+    minHeight: number
+    borderRadius: number
+    typographyVariant: 'title3' | 'callout' | 'body' | 'label' | 'caption'
+  }
+> = {
+  xl: {
+    paddingVertical: 18,
+    paddingHorizontal: 28,
+    minHeight: 60,
+    borderRadius: 12,
+    typographyVariant: 'title3',
+  },
+  lg: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    minHeight: 54,
+    borderRadius: 10,
+    typographyVariant: 'callout',
+  },
+  md: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    minHeight: 48,
+    borderRadius: 8,
+    typographyVariant: 'callout',
+  },
+  sm: {
+    paddingVertical: 9,
+    paddingHorizontal: 16,
+    minHeight: 38,
+    borderRadius: 6,
+    typographyVariant: 'label',
+  },
+  xs: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    minHeight: 30,
+    borderRadius: 4,
+    typographyVariant: 'caption',
+  },
+}
+
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost'
 
 export type IconButtonVariant = 'filled' | 'outlined' | 'ghost'

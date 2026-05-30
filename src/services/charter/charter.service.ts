@@ -2,9 +2,10 @@ import { api } from '@/lib/api'
 import { ApiResponse } from '@/types/api'
 import { CharterDTO } from './charter.types'
 import { CharterPhotoDTO } from './charterPhoto.types'
+import { PackageAvailabilityDTO, PackageDTO } from './package.types'
 
 const PACKAGE_FIELDS =
-  'id,price,min_persons,max_persons,hours,currency,title,description,package_type'
+  'id,price,min_persons,max_persons,hours,currency,title,description,package_type,capacity'
 
 export type AvailabilityParams = {
   trip_date: string
@@ -19,12 +20,15 @@ export const charterService = {
   getPhotos: (charterId: number): Promise<ApiResponse<CharterPhotoDTO[]>> =>
     api.get('/charter_photos', { params: { charter_id: charterId } }).then((r) => r.data),
 
-  getPackages: (charterId: number): Promise<ApiResponse<unknown>> =>
+  getPackages: (charterId: number): Promise<ApiResponse<PackageDTO[]>> =>
     api
       .get('/packages', { params: { charter_id: charterId, fields: PACKAGE_FIELDS } })
       .then((r) => r.data),
 
-  getAvailability: (charterId: number, params: AvailabilityParams): Promise<ApiResponse<unknown>> =>
+  getAvailability: (
+    charterId: number,
+    params: AvailabilityParams,
+  ): Promise<ApiResponse<Record<string, PackageAvailabilityDTO>>> =>
     api
       .get('/package_availabilities', { params: { charter_id: charterId, ...params } })
       .then((r) => r.data),

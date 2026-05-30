@@ -1,5 +1,4 @@
-export function formatBookingDate(date: Date | null): string {
-  if (!date) return 'Select date'
+export function formatBookingDate(date: Date): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 

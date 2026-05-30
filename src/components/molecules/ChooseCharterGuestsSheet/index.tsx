@@ -10,8 +10,6 @@ import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-interface ChooseCharterGuestsSheetProps {}
-
 interface GuestRowProps {
   label: string
   subtitle: string
@@ -75,7 +73,7 @@ const GuestRow = ({
   )
 }
 
-const ChooseCharterGuestsSheet = (_: ChooseCharterGuestsSheetProps) => {
+const ChooseCharterGuestsSheet = () => {
   const { bottom } = useSafeAreaInsets()
   const theme = useTheme()
   const dismiss = useSheetDismiss()
@@ -151,4 +149,3 @@ const styles = StyleSheet.create({
 })
 
 export default ChooseCharterGuestsSheet
-export type { ChooseCharterGuestsSheetProps }

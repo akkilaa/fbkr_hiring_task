@@ -4,8 +4,10 @@ import { useBottomSheet } from '@/bottom-sheet/BottomSheetProvider'
 import Button from '@/components/atoms/Button'
 import Icon from '@/components/atoms/Icon'
 import Typography from '@/components/atoms/Typography'
+import { withSkeleton } from '@/hoc/withSkeleton'
 import { useTheme } from '@/hooks/use-theme'
 import { StyleSheet, View } from 'react-native'
+import CharterDescriptionSkeleton from './Skeleton'
 
 interface CharterDescriptionProps {
   title: string
@@ -92,4 +94,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CharterDescription
+export default withSkeleton(CharterDescription, CharterDescriptionSkeleton)

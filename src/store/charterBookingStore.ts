@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 interface CharterBookingState {
-  date: Date | null
+  date: Date
   adults: number
   children: number
   setDate: (date: Date) => void
@@ -9,7 +9,7 @@ interface CharterBookingState {
 }
 
 export const useCharterBookingStore = create<CharterBookingState>((set) => ({
-  date: null,
+  date: new Date(),
   adults: 2,
   children: 0,
   setDate: (date) => set({ date }),
