@@ -1,5 +1,6 @@
 import SafeAreaView from '@/components/atoms/SafeAreaView'
-import { useCharter } from '@/hooks/useCharters'
+import ImageGallery from '@/components/molecules/ImageGallery'
+import { useCharter, useCharterPhotos } from '@/hooks/useCharters'
 import { View } from 'react-native'
 
 type Props = {
@@ -7,10 +8,12 @@ type Props = {
 }
 
 const CharterScreen = ({ charterNumber }: Props) => {
-  const { data } = useCharter(charterNumber)
+  useCharter(charterNumber)
+  const { data: photos = [] } = useCharterPhotos(charterNumber)
 
   return (
     <SafeAreaView>
+      <ImageGallery photos={photos} />
       <View></View>
     </SafeAreaView>
   )

@@ -47,6 +47,23 @@ export interface CharterPhotoDTO extends Omit<
   date_updated: string
   url_pattern: string
 }
+// TODO: Check this
+export const mapCharterPhoto = (dto: CharterPhotoDTO): CharterPhoto => ({
+  id: Number(dto.id),
+  charterId: Number(dto.charter_idcharter),
+  description: dto.description,
+  altText: dto.alt_text,
+  cardinal: dto.cardinal === '1',
+  path: dto.path,
+  width: Number(dto.width),
+  height: Number(dto.height),
+  aspectRatio: Number(dto.aspect_ratio),
+  status: dto.status,
+  dateCreated: dto.date_created,
+  dateUpdated: dto.date_updated,
+  urls: dto.urls,
+  urlPattern: dto.url_pattern,
+})
 
 interface CharterPhotoUrls {
   small: string

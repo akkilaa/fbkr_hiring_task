@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import { charterService, AvailabilityParams } from './charter.service'
+import { mapCharterPhoto } from './charterPhoto.types'
 
 export const charterKeys = {
   all: (charterId: number) => ['charters', charterId] as const,
@@ -21,6 +22,7 @@ export const charterQueryOptions = {
     queryOptions({
       queryKey: charterKeys.photos(charterId),
       queryFn: () => charterService.getPhotos(charterId),
+      select: (res) => res.data.map(mapCharterPhoto),
     }),
 
   packages: (charterId: number) =>
