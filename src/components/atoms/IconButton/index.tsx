@@ -2,7 +2,7 @@ import ButtonBase from '@/components/atoms/ButtonBase'
 import { type PressableProps } from '@/components/atoms/Pressable'
 import { iconButtonVariants, type IconButtonVariant } from '@/constants/theme'
 import { useTheme } from '@/hooks/use-theme'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { StyleSheet } from 'react-native'
 
 type Shape = 'circle' | 'rounded'
@@ -24,9 +24,13 @@ const IconButton = memo(
     shape = 'circle',
     size = 40,
     style,
+    onPressIn,
+    onPressOut,
     ...rest
   }: IconButtonProps) => {
     const theme = useTheme()
+    const [pressed, setPressed] = useState(false)
+
     return (
       <ButtonBase
         accessibilityLabel={accessibilityLabel}
@@ -34,9 +38,18 @@ const IconButton = memo(
         style={[
           styles.base,
           iconButtonVariants(theme)[variant].container,
+          variant === 'outlined' && pressed && { borderColor: theme.brand },
           { width: size, height: size, borderRadius: shape === 'circle' ? size / 2 : 8 },
           typeof style !== 'function' ? style : undefined,
         ]}
+        onPressIn={(e) => {
+          setPressed(true)
+          onPressIn?.(e)
+        }}
+        onPressOut={(e) => {
+          setPressed(false)
+          onPressOut?.(e)
+        }}
         {...rest}
       >
         {icon}

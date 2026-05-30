@@ -70,7 +70,11 @@ export const iconButtonVariants = (theme: Record<ThemeColor, string>) =>
   ({
     filled: { container: { backgroundColor: '#ffffff' } },
     outlined: {
-      container: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: theme.brand },
+      container: {
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        borderColor: theme.backgroundSelected,
+      },
     },
     ghost: { container: { backgroundColor: 'transparent' } },
   }) as const

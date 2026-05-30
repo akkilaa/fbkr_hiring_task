@@ -6,6 +6,7 @@ import {
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { sheetRegistry, type SheetName } from './registry'
+import { SheetDismissProvider } from './SheetDismissContext'
 
 export type SheetSlotHandle = { dismiss: () => void }
 
@@ -44,7 +45,13 @@ export const SheetSlot = forwardRef<SheetSlotHandle, Props>(({ instance, onClose
       backdropComponent={renderBackdrop}
       onDismiss={onClosed}
     >
-      <Content {...(instance.payload as object)} />
+      <SheetDismissProvider
+        value={() => {
+          modalRef.current?.dismiss()
+        }}
+      >
+        <Content {...(instance.payload as object)} />
+      </SheetDismissProvider>
     </BottomSheetModal>
   )
 })

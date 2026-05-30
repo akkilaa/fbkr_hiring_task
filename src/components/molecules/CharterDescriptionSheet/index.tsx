@@ -1,4 +1,5 @@
 import Typography from '@/components/atoms/Typography'
+import SheetHeader from '@/components/molecules/SheetHeader'
 import { useTheme } from '@/hooks/use-theme'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { StyleSheet, View } from 'react-native'
@@ -16,7 +17,7 @@ const CharterDescriptionSheet = ({ description }: CharterDescriptionSheetProps) 
     <BottomSheetScrollView
       contentContainerStyle={[styles.content, { paddingBottom: Math.max(bottom, 16) + 16 }]}
     >
-      <Typography variant="title3">Description</Typography>
+      <SheetHeader title="Description" />
       <View style={[styles.divider, { backgroundColor: theme.backgroundSelected }]} />
       <Typography variant="body" style={[styles.description, { color: theme.textSecondary }]}>
         {description}
