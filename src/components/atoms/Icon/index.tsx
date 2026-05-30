@@ -12,33 +12,40 @@ interface IconBaseProps {
 interface IconByNameProps extends IconBaseProps {
   name: IconName
   xml?: never
-  uri?: never
-  module?: never
+  icon?: never
 }
 
 interface IconByXmlProps extends IconBaseProps {
   xml: string
   name?: never
-  uri?: never
-  module?: never
+  icon?: never
 }
 
-interface IconByUriProps extends IconBaseProps {
-  uri: string
+interface IconByIconProps extends IconBaseProps {
+  icon: number | string // import X from '*.svg' or 'https://...'
   name?: never
   xml?: never
-  module?: never
 }
 
-interface IconByModuleProps extends IconBaseProps {
-  module: number // require('@/assets/icons/someIcon.svg')
-  name?: never
-  xml?: never
-  uri?: never
-}
+type IconProps = IconByNameProps | IconByXmlProps | IconByIconProps
 
-type IconProps = IconByNameProps | IconByXmlProps | IconByUriProps | IconByModuleProps
-
+/**
+ * Renders an SVG icon from three possible sources (mutually exclusive):
+ *
+ * Local bundled file:
+ *   import MapPinIcon from '@/assets/icons/map-pin.svg'
+ *   <Icon icon={MapPinIcon} size={24} color="black" />
+ *
+ * Remote URL, always pull from ICONS constant, never inline strings:
+ *   import { ICONS } from '@/constants/icons'
+ *   <Icon icon={ICONS.logo.uri} size={32} />
+ *
+ * Named shorthand (looks up ICONS internally, same result as above):
+ *   <Icon name="logo" size={32} />
+ *
+ * Raw XML string (one-off SVGs that won't be reused):
+ *   <Icon xml={svgString} size={24} color="red" />
+ */
 const Icon = memo(({ size = 24, color, ...rest }: IconProps) => {
   const [hasError, setHasError] = useState(false)
 
@@ -51,11 +58,11 @@ const Icon = memo(({ size = 24, color, ...rest }: IconProps) => {
   }
 
   const resolvedUri =
-    'module' in rest && rest.module != null
-      ? Image.resolveAssetSource(rest.module).uri
-      : 'uri' in rest && rest.uri
-        ? rest.uri
-        : ICONS[rest.name as IconName].uri
+    'icon' in rest && rest.icon != null
+      ? typeof rest.icon === 'number'
+        ? Image.resolveAssetSource(rest.icon).uri
+        : rest.icon
+      : ICONS[rest.name as IconName].uri
 
   return (
     <SvgUri

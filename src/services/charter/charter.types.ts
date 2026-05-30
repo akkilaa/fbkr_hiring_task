@@ -217,6 +217,39 @@ export interface CharterDTO extends Omit<
   availability_last_modified_captain: string
 }
 
+export const mapCharter = (dto: CharterDTO): Charter => ({
+  id: Number(dto.id),
+  title: dto.title,
+  description: dto.description,
+  shortdesc: dto.shortdesc,
+  longdesc: dto.longdesc,
+  thumbpath: dto.thumbpath,
+  city: dto.city,
+  street: dto.street,
+  postalcode: dto.postalcode,
+  directions: dto.directions,
+  timezone: dto.timezone,
+  geopoint: dto.geopoint,
+  currency: dto.currency,
+  deposit: dto.deposit,
+  capacity: Number(dto.capacity),
+  boatType: dto.boat_type,
+  manufacturer: dto.manufacturer,
+  yearBuilt: dto.year_built,
+  engineHorsepower: dto.engine_horsepower,
+  engineNumber: dto.engine_number,
+  cancellation: dto.cancellation,
+  freeCancellationDaysInAdvance: Number(dto.free_cancellation_days_in_advance),
+  isBookable: dto.bookable,
+  isPublic: dto.public,
+  hasBoat: dto.has_boat,
+  clientsKeepCatch: dto.clients_keep_catch === '1',
+  childrenAllowed: dto.children_allowed === '1',
+  packageMinPriceGroupUsd: dto.package_min_price_group_usd
+    ? Number(dto.package_min_price_group_usd)
+    : null,
+})
+
 interface CharterGeopoint {
   latitude: number
   longitude: number

@@ -2,10 +2,13 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router'
 import { useColorScheme } from 'react-native'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { useReactQueryDevTools } from '@dev-plugins/react-query'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon'
 import { queryClient } from '@/lib/query-client'
 import { useReactQueryNative } from '@/lib/query-native'
+import { BottomSheetProvider } from '@/bottom-sheet/BottomSheetProvider'
 
 function AppProviders({ children }: { children: React.ReactNode }) {
   useReactQueryDevTools(queryClient)
@@ -16,11 +19,17 @@ function AppProviders({ children }: { children: React.ReactNode }) {
 export default function TabLayout() {
   const colorScheme = useColorScheme()
   return (
-    <AppProviders>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }} />
-        <AnimatedSplashOverlay />
-      </ThemeProvider>
-    </AppProviders>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <AppProviders>
+          <BottomSheetProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack screenOptions={{ headerShown: false }} />
+              <AnimatedSplashOverlay />
+            </ThemeProvider>
+          </BottomSheetProvider>
+        </AppProviders>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   )
 }
