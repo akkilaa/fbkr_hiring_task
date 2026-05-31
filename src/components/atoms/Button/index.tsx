@@ -3,7 +3,8 @@ import { type PressableProps } from '@/components/atoms/Pressable'
 import Typography from '@/components/atoms/Typography'
 import { buttonSizes, buttonVariants, type ButtonSize, type ButtonVariant } from '@/constants/theme'
 import { useTheme } from '@/hooks/use-theme'
-import { memo } from 'react'
+import { memo, useCallback, useRef } from 'react'
+import type { GestureResponderEvent } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 
 interface ButtonProps extends Omit<PressableProps, 'children'> {
@@ -14,7 +15,8 @@ interface ButtonProps extends Omit<PressableProps, 'children'> {
 }
 
 const Button = memo(
-  ({ label, variant = 'primary', size = 'md', loading, style, ...rest }: ButtonProps) => {
+  ({ label, variant = 'primary', size = 'md', loading, style, onPress, ...rest }: ButtonProps) => {
+    const pressLockRef = useRef(false)
     const theme = useTheme()
     const {
       container,
@@ -24,9 +26,27 @@ const Button = memo(
     const { paddingVertical, paddingHorizontal, minHeight, borderRadius, typographyVariant } =
       buttonSizes[size]
 
+    const handlePress = useCallback(
+      (event: GestureResponderEvent) => {
+        if (pressLockRef.current || loading) {
+          return
+        }
+
+        pressLockRef.current = true
+        onPress?.(event)
+
+        // Prevent accidental rapid double taps from firing actions twice.
+        setTimeout(() => {
+          pressLockRef.current = false
+        }, 500)
+      },
+      [loading, onPress],
+    )
+
     return (
       <ButtonBase
         loading={loading}
+        onPress={handlePress}
         style={[
           {
             width: '100%',
@@ -55,5 +75,5 @@ const Button = memo(
 )
 
 export default Button
+export { ButtonSize, ButtonVariant }
 export type { ButtonProps }
-export { ButtonVariant, ButtonSize }
