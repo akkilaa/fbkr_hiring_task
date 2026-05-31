@@ -15,7 +15,7 @@ import {
 import { useLoaderStore } from '@/store/loaderStore'
 import { enterSuccessScreen } from '@/utils/bookingLifecycle'
 import { useQuery } from '@tanstack/react-query'
-import { useFocusEffect, useRouter } from 'expo-router'
+import { Stack, useFocusEffect, useRouter } from 'expo-router'
 import { useCallback, useEffect } from 'react'
 import { Animated, BackHandler, Platform, ScrollView, StyleSheet } from 'react-native'
 
@@ -83,9 +83,15 @@ export default function CharterSuccessScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!confirmation) return null
-
-  return <SuccessContent confirmation={confirmation} />
+  return (
+    <>
+      {/* Disable the iOS swipe-back (swipe-from-left) gesture so the completed
+          booking can't be swiped back into the payment flow. Android's hardware
+          back is handled above. */}
+      <Stack.Screen options={{ gestureEnabled: false }} />
+      {confirmation ? <SuccessContent confirmation={confirmation} /> : null}
+    </>
+  )
 }
 
 const styles = StyleSheet.create({
