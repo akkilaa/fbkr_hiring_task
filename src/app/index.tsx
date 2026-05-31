@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router'
 
 export default function HomeScreen() {
-  return <Redirect href="/13288" />
+  return <Redirect href="/1128" />
 }
