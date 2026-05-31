@@ -1,5 +1,7 @@
 import Input from '@/components/atoms/Input'
+import PhoneInput from '@/components/atoms/PhoneInput'
 import Typography from '@/components/atoms/Typography'
+import { useCheckoutScroll } from '@/context/CheckoutScrollContext'
 import { useTheme } from '@/hooks/use-theme'
 import { usePersonDetailsStore } from '@/store/personDetailsStore'
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
@@ -28,6 +30,7 @@ interface PersonDetailsProps {
 
 const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onSubmit }, ref) => {
   const theme = useTheme()
+  const { assureFocusedInputVisible } = useCheckoutScroll()
   const setPersonDetails = usePersonDetailsStore((s) => s.setPersonDetails)
   const resetPersonDetails = usePersonDetailsStore((s) => s.reset)
 
@@ -102,9 +105,13 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           autoComplete="given-name"
           textContentType="givenName"
           returnKeyType="next"
+          submitBehavior="submit"
           error={errors.firstName}
           onChangeText={(text) => handleChange('firstName', text)}
-          onSubmitEditing={() => setTimeout(() => lastNameRef.current?.focus(), 50)}
+          onSubmitEditing={() => {
+            lastNameRef.current?.focus()
+            assureFocusedInputVisible()
+          }}
         />
         <Input
           ref={lastNameRef}
@@ -114,9 +121,13 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           autoComplete="family-name"
           textContentType="familyName"
           returnKeyType="next"
+          submitBehavior="submit"
           error={errors.lastName}
           onChangeText={(text) => handleChange('lastName', text)}
-          onSubmitEditing={() => setTimeout(() => emailRef.current?.focus(), 50)}
+          onSubmitEditing={() => {
+            emailRef.current?.focus()
+            assureFocusedInputVisible()
+          }}
         />
         <Input
           ref={emailRef}
@@ -127,18 +138,17 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           autoComplete="email"
           textContentType="emailAddress"
           returnKeyType="next"
+          submitBehavior="submit"
           error={errors.email}
           onChangeText={(text) => handleChange('email', text)}
-          onSubmitEditing={() => setTimeout(() => phoneRef.current?.focus(), 50)}
+          onSubmitEditing={() => {
+            phoneRef.current?.focus()
+            assureFocusedInputVisible()
+          }}
         />
-        <Input
+        <PhoneInput
           ref={phoneRef}
           label="Phone number"
-          placeholder="+1 234 567 8900"
-          keyboardType="phone-pad"
-          autoComplete="tel"
-          textContentType="telephoneNumber"
-          returnKeyType="done"
           error={errors.phone}
           onChangeText={(text) => handleChange('phone', text)}
           onSubmitEditing={handleSubmit}

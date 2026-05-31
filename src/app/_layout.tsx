@@ -52,5 +52,5 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  gestureHandler: { flex: 1, backgroundColor: '#208AEF' },
+  gestureHandler: { flex: 1, backgroundColor: '#ffffff' },
 })

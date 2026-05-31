@@ -1,6 +1,11 @@
 import SafeAreaView from '@/components/atoms/SafeAreaView'
 import StickyBottomBar from '@/components/atoms/StickyBottomBar'
 import NavigationHeader from '@/components/molecules/NavigationHeader'
+import {
+  type CheckoutAnchorId,
+  CheckoutScrollContext,
+  type CheckoutScrollContextValue,
+} from '@/context/CheckoutScrollContext'
 import { useCallback, useMemo, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import {
@@ -8,11 +13,6 @@ import {
   type KeyboardAwareScrollViewRef,
 } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  type CheckoutAnchorId,
-  CheckoutScrollContext,
-  type CheckoutScrollContextValue,
-} from '@/context/CheckoutScrollContext'
 
 const SCROLL_ANCHOR_PADDING = 16
 
@@ -40,9 +40,15 @@ const CheckoutShell = ({ children, bottomBar, onBack }: CheckoutShellProps) => {
     [],
   )
 
+  const assureFocusedInputVisible = useCallback<
+    CheckoutScrollContextValue['assureFocusedInputVisible']
+  >(() => {
+    scrollRef.current?.assureFocusedInputVisible()
+  }, [])
+
   const scroll = useMemo<CheckoutScrollContextValue>(
-    () => ({ registerAnchor, scrollToAnchor }),
-    [registerAnchor, scrollToAnchor],
+    () => ({ registerAnchor, scrollToAnchor, assureFocusedInputVisible }),
+    [registerAnchor, scrollToAnchor, assureFocusedInputVisible],
   )
 
   return (

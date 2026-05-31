@@ -14,6 +14,13 @@ export interface CheckoutScrollContextValue {
    * ensures the input is already in the viewport before the keyboard rises.
    */
   scrollToAnchor: (id: CheckoutAnchorId, animated?: boolean) => void
+  /**
+   * Tell the KeyboardAwareScrollView to scroll the currently-focused input into
+   * view immediately. Call this after a programmatic focus() when the keyboard
+   * stays up (blurOnSubmit=false) — KASV defers its own scroll until
+   * onSelectionChange fires (i.e. first keystroke) in that case.
+   */
+  assureFocusedInputVisible: () => void
 }
 
 const noop = () => {}
@@ -21,6 +28,7 @@ const noop = () => {}
 export const CheckoutScrollContext = createContext<CheckoutScrollContextValue>({
   registerAnchor: noop,
   scrollToAnchor: noop,
+  assureFocusedInputVisible: noop,
 })
 
 export const useCheckoutScroll = () => useContext(CheckoutScrollContext)

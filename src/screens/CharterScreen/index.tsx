@@ -27,11 +27,13 @@ const CharterScreen = ({ charterNumber }: Props) => {
       <CharterPackages
         loading={isPackagesLoading}
         packages={packages}
+        guestCount={adults + children}
         onReserve={(packageId) => {
           setSelection(charterNumber, packageId)
           router.push('/checkout')
         }}
         onChangeDate={() => present('chooseCharterDate', {})}
+        onChangeGuests={() => present('chooseCharterGuests', {})}
       />
     </SafeScrollView>
   )

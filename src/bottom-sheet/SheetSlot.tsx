@@ -4,7 +4,7 @@ import {
   type BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
-import { useWindowDimensions } from 'react-native'
+import { Platform, useWindowDimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { sheetRegistry, type SheetName } from './registry'
 import { SheetDismissProvider } from './SheetDismissContext'
@@ -47,8 +47,9 @@ export const SheetSlot = forwardRef<SheetSlotHandle, Props>(({ instance, onClose
       backdropComponent={renderBackdrop}
       onDismiss={onClosed}
       topInset={top}
-      keyboardBehavior="interactive"
+      keyboardBehavior={Platform.OS === 'android' ? 'fillParent' : 'interactive'}
       keyboardBlurBehavior="restore"
+      android_keyboardInputMode={Platform.OS === 'android' ? 'adjustResize' : undefined}
     >
       <SheetDismissProvider
         value={() => {

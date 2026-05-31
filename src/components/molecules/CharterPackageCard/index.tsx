@@ -14,17 +14,22 @@ import CharterPackageCardSkeleton from './Skeleton'
 interface CharterPackageCardProps {
   pkg: Package
   isAvailable: boolean
+  guestCount: number
   onReserve?: () => void
   onChangeDate?: () => void
+  onChangeGuests?: () => void
 }
 
 const CharterPackageCard = ({
   pkg,
   isAvailable,
+  guestCount,
   onReserve,
   onChangeDate,
+  onChangeGuests,
 }: CharterPackageCardProps) => {
   const theme = useTheme()
+  const tooManyGuests = !isAvailable && guestCount > pkg.capacity
 
   return (
     <View style={[styles.card, { borderColor: theme.backgroundSelected }]}>
@@ -51,9 +56,16 @@ const CharterPackageCard = ({
       ) : (
         <View style={styles.unavailable}>
           <Typography variant="caption" style={{ color: theme.textSecondary, textAlign: 'center' }}>
-            This trip is not available for the selected date
+            {tooManyGuests
+              ? `This trip fits up to ${pkg.capacity} guests — try reducing your group size or browse other packages`
+              : 'This trip is not available for the selected date'}
           </Typography>
-          <Button size="sm" variant="outline" label="Change date" onPress={onChangeDate} />
+          <Button
+            size="sm"
+            variant="outline"
+            label={tooManyGuests ? 'Change guests' : 'Change date'}
+            onPress={tooManyGuests ? onChangeGuests : onChangeDate}
+          />
         </View>
       )}
     </View>
@@ -63,15 +75,19 @@ const CharterPackageCard = ({
 interface CharterPackagesProps {
   packages: PackageWithAvailability[]
   loading: boolean
+  guestCount: number
   onReserve: (packageId: number) => void
   onChangeDate: () => void
+  onChangeGuests: () => void
 }
 
 export const CharterPackages = ({
   packages,
   loading,
+  guestCount,
   onReserve,
   onChangeDate,
+  onChangeGuests,
 }: CharterPackagesProps) => {
   if (!loading && packages.length === 0) return null
 
@@ -85,8 +101,10 @@ export const CharterPackages = ({
               key={pkg.id}
               pkg={pkg}
               isAvailable={pkg.isAvailable}
+              guestCount={guestCount}
               onReserve={() => onReserve(pkg.id)}
               onChangeDate={onChangeDate}
+              onChangeGuests={onChangeGuests}
             />
           ))}
     </View>
