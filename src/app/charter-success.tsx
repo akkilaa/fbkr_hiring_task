@@ -1,0 +1,91 @@
+import Button from '@/components/atoms/Button'
+import SafeAreaView from '@/components/atoms/SafeAreaView'
+import StickyBottomBar from '@/components/atoms/StickyBottomBar'
+import SuccessContactSection from '@/components/organisms/SuccessContactSection'
+import SuccessHeroSection from '@/components/organisms/SuccessHeroSection'
+import SuccessPaymentSection from '@/components/organisms/SuccessPaymentSection'
+import SuccessTripSection from '@/components/organisms/SuccessTripSection'
+import { useSuccessAnimation } from '@/hooks/useSuccessAnimation'
+import { useResetState } from '@/hooks/useResetState'
+import { charterQueryOptions } from '@/services/charter/charter.queries'
+import {
+  type BookingConfirmation,
+  useBookingConfirmationStore,
+} from '@/store/bookingConfirmationStore'
+import { useLoaderStore } from '@/store/loaderStore'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+import { Animated, ScrollView, StyleSheet } from 'react-native'
+
+function SuccessContent({ confirmation }: { confirmation: BookingConfirmation }) {
+  const router = useRouter()
+  const { circleScale, contentAnimStyle } = useSuccessAnimation()
+
+  const { data: charter } = useQuery(charterQueryOptions.detail(confirmation.charterId))
+  const { data: packages } = useQuery(charterQueryOptions.packages(confirmation.charterId))
+  const selectedPackage = packages?.find((p) => p.id === confirmation.packageId)
+
+  return (
+    <SafeAreaView edges={['top']} style={styles.root}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 96 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        <SuccessHeroSection circleScale={circleScale} contentAnimStyle={contentAnimStyle} />
+
+        <Animated.View style={[styles.cards, contentAnimStyle]}>
+          <SuccessTripSection
+            confirmation={confirmation}
+            charterTitle={charter?.title}
+            charterCity={charter?.city}
+            packageTitle={selectedPackage?.title}
+            packageHours={selectedPackage?.hours}
+            packagePrice={selectedPackage?.price}
+            packageCurrency={selectedPackage?.currency}
+          />
+          <SuccessContactSection confirmation={confirmation} />
+          <SuccessPaymentSection confirmation={confirmation} />
+        </Animated.View>
+      </ScrollView>
+
+      <StickyBottomBar>
+        <Button label="Explore more trips" size="lg" onPress={() => router.dismissAll()} />
+      </StickyBottomBar>
+    </SafeAreaView>
+  )
+}
+
+export default function CharterSuccessScreen() {
+  const confirmation = useBookingConfirmationStore((s) => s.confirmation)
+  const hide = useLoaderStore((s) => s.hide)
+  const resetState = useResetState()
+
+  useEffect(() => {
+    hide()
+    resetState()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (!confirmation) return null
+
+  return <SuccessContent confirmation={confirmation} />
+}
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#e7eff2',
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  cards: {
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+})

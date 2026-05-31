@@ -63,10 +63,16 @@ const CharterPackageCard = ({
 interface CharterPackagesProps {
   packages: PackageWithAvailability[]
   loading: boolean
+  onReserve: (packageId: number) => void
   onChangeDate: () => void
 }
 
-export const CharterPackages = ({ packages, loading, onChangeDate }: CharterPackagesProps) => {
+export const CharterPackages = ({
+  packages,
+  loading,
+  onReserve,
+  onChangeDate,
+}: CharterPackagesProps) => {
   if (!loading && packages.length === 0) return null
 
   return (
@@ -79,6 +85,7 @@ export const CharterPackages = ({ packages, loading, onChangeDate }: CharterPack
               key={pkg.id}
               pkg={pkg}
               isAvailable={pkg.isAvailable}
+              onReserve={() => onReserve(pkg.id)}
               onChangeDate={onChangeDate}
             />
           ))}

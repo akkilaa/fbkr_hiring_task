@@ -1,32 +1,20 @@
 import React, { memo } from 'react'
 import { ScrollView } from 'react-native'
 import type { ScrollViewProps } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import SafeAreaView from '@/components/atoms/SafeAreaView'
 
 interface SafeScrollViewProps extends ScrollViewProps {
   children?: React.ReactNode
 }
 
-const SafeScrollView = memo(
-  ({ children, contentContainerStyle, style, ...props }: SafeScrollViewProps) => {
-    const insets = useSafeAreaInsets()
-
-    return (
-      <ScrollView
-        style={[{ flex: 1 }, style]}
-        contentContainerStyle={[
-          {
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-          },
-          contentContainerStyle,
-        ]}
-        {...props}
-      >
+const SafeScrollView = memo(({ children, style, ...props }: SafeScrollViewProps) => {
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={[{ flex: 1 }, style]} {...props}>
         {children}
       </ScrollView>
-    )
-  },
-)
+    </SafeAreaView>
+  )
+})
 
 export default SafeScrollView

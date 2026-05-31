@@ -15,6 +15,7 @@ interface CharterDescriptionProps {
   rating?: number
   reviewCount?: number
   description: string
+  hideDescription?: boolean
 }
 
 const CharterDescription = ({
@@ -23,6 +24,7 @@ const CharterDescription = ({
   rating,
   reviewCount,
   description,
+  hideDescription,
 }: CharterDescriptionProps) => {
   const { present } = useBottomSheet()
   const theme = useTheme()
@@ -58,19 +60,23 @@ const CharterDescription = ({
           </>
         )}
       </View>
-      <Typography
-        variant="body"
-        style={[styles.secondaryText, { color: theme.textSecondary }]}
-        numberOfLines={3}
-      >
-        {description}
-      </Typography>
-      <Button
-        variant="ghost"
-        label="Read full description"
-        style={styles.ghostButton}
-        onPress={() => present('charterDescription', { description })}
-      />
+      {!hideDescription && (
+        <>
+          <Typography
+            variant="body"
+            style={[styles.secondaryText, { color: theme.textSecondary }]}
+            numberOfLines={3}
+          >
+            {description}
+          </Typography>
+          <Button
+            variant="ghost"
+            label="Read full description"
+            style={styles.ghostButton}
+            onPress={() => present('charterDescription', { description })}
+          />
+        </>
+      )}
     </View>
   )
 }

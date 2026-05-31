@@ -5,11 +5,13 @@ import ChooseCharterDateSheet from '@/components/molecules/ChooseCharterDateShee
 import type { ChooseCharterDateSheetProps } from '@/components/molecules/ChooseCharterDateSheet'
 import ChooseCharterGuestsSheet from '@/components/molecules/ChooseCharterGuestsSheet'
 import type { ChooseCharterGuestsSheetProps } from '@/components/molecules/ChooseCharterGuestsSheet'
+import AddCreditCardSheet from '@/components/molecules/AddCreditCardSheet'
 
 export type SheetRegistry = {
   charterDescription: React.ComponentType<CharterDescriptionSheetProps>
   chooseCharterDate: React.ComponentType<ChooseCharterDateSheetProps>
   chooseCharterGuests: React.ComponentType<ChooseCharterGuestsSheetProps>
+  addCreditCard: React.ComponentType<Record<string, never>>
 }
 
 export type SheetName = keyof SheetRegistry
@@ -19,4 +21,5 @@ export const sheetRegistry: { [K in SheetName]: SheetRegistry[K] } = {
   charterDescription: CharterDescriptionSheet,
   chooseCharterDate: ChooseCharterDateSheet,
   chooseCharterGuests: ChooseCharterGuestsSheet,
+  addCreditCard: AddCreditCardSheet,
 }

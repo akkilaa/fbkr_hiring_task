@@ -5,6 +5,7 @@ import {
 } from '@gorhom/bottom-sheet'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { sheetRegistry, type SheetName } from './registry'
 import { SheetDismissProvider } from './SheetDismissContext'
 
@@ -18,6 +19,7 @@ type Props = {
 export const SheetSlot = forwardRef<SheetSlotHandle, Props>(({ instance, onClosed }, ref) => {
   const modalRef = useRef<BottomSheetModal>(null)
   const { height } = useWindowDimensions()
+  const { top } = useSafeAreaInsets()
 
   const Content = sheetRegistry[instance.name] as React.ComponentType
 
@@ -44,6 +46,9 @@ export const SheetSlot = forwardRef<SheetSlotHandle, Props>(({ instance, onClose
       enablePanDownToClose
       backdropComponent={renderBackdrop}
       onDismiss={onClosed}
+      topInset={top}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
     >
       <SheetDismissProvider
         value={() => {

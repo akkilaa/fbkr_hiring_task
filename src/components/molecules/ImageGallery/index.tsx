@@ -12,9 +12,10 @@ import ImageGallerySkeleton from './Skeleton'
 interface ImageGalleryProps {
   photos: CharterPhoto[]
   height?: number
+  locked?: boolean
 }
 
-const ImageGallery = ({ photos, height = 280 }: ImageGalleryProps) => {
+const ImageGallery = ({ photos, height = 280, locked = false }: ImageGalleryProps) => {
   const { notifyPhotoVisible } = usePhotoPreloader(photos)
   const { activeIndex, onViewableItemsChanged, viewabilityConfig } = useActiveGalleryIndex({
     onIndexChange: notifyPhotoVisible,
@@ -51,6 +52,7 @@ const ImageGallery = ({ photos, height = 280 }: ImageGalleryProps) => {
         keyExtractor={keyExtractor}
         horizontal
         pagingEnabled
+        scrollEnabled={!locked}
         showsHorizontalScrollIndicator={false}
         initialNumToRender={3}
         maxToRenderPerBatch={5}
@@ -60,7 +62,7 @@ const ImageGallery = ({ photos, height = 280 }: ImageGalleryProps) => {
         viewabilityConfig={viewabilityConfig}
       />
 
-      {photos.length > 1 && (
+      {!locked && photos.length > 1 && (
         <View style={styles.dotsContainer}>
           <Dots count={photos.length} activeIndex={activeIndex} />
         </View>
@@ -72,7 +74,7 @@ const ImageGallery = ({ photos, height = 280 }: ImageGalleryProps) => {
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    backgroundColor: '#d0e8f2',
+    backgroundColor: '#e7eff2',
   },
   dotsContainer: {
     position: 'absolute',
