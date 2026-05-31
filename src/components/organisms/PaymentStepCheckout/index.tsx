@@ -1,6 +1,7 @@
 import BookingSummary from '@/components/molecules/BookingSummary'
 import CharterOverview from '@/components/molecules/CharterOverview'
 import CheckoutBreadcrumb from '@/components/molecules/CheckoutBreadcrumb'
+import FinalStepReminder from '@/components/molecules/FinalStepReminder'
 import PaymentMode, { type PaymentOption } from '@/components/molecules/PaymentMode'
 import CreditCardSection from '@/components/organisms/CreditCardSection'
 import { useCheckoutScroll } from '@/context/CheckoutScrollContext'
@@ -32,6 +33,9 @@ const PaymentStepCheckout = forwardRef<PaymentStepCheckoutHandle>((_, ref) => {
     <View style={styles.container}>
       <View style={styles.section}>
         <CheckoutBreadcrumb variant="stepped" currentStep={2} />
+      </View>
+      <View style={styles.section}>
+        <FinalStepReminder />
       </View>
       <View style={styles.section}>
         <CharterOverview locked hideGallery hideDescription hideDropdowns />
