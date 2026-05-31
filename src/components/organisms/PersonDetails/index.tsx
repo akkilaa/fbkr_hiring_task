@@ -5,7 +5,7 @@ import { useCheckoutScroll } from '@/context/CheckoutScrollContext'
 import { useTheme } from '@/hooks/use-theme'
 import { usePersonDetailsStore } from '@/store/personDetailsStore'
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import { StyleSheet, TextInput, View } from 'react-native'
+import { Platform, StyleSheet, TextInput, View } from 'react-native'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -162,11 +162,21 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           autoComplete="email"
           textContentType="emailAddress"
           returnKeyType="next"
-          submitBehavior="submit"
+          // Android handles the in-place keyboard swap fine, so keep it up and
+          // scroll manually like the other hops. iOS instead jumps-then-settles
+          // on the QWERTY -> numeric swap, so let the email keyboard dismiss.
+          submitBehavior={Platform.OS === 'ios' ? undefined : 'submit'}
           defaultValue={values.current.email}
           error={errors.email}
           onChangeText={(text) => handleChange('email', text)}
           onSubmitEditing={() => {
+            if (Platform.OS === 'ios') {
+              // Let the email keyboard dismiss and the numeric one re-present so
+              // KASV's keyboard-show scroll rises in lockstep with the keyboard.
+              // The deferred focus lets the dismissal register before we refocus.
+              requestAnimationFrame(() => phoneRef.current?.focus())
+              return
+            }
             phoneRef.current?.focus()
             assureFocusedInputVisible()
           }}
