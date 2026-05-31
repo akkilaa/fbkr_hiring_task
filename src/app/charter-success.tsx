@@ -15,9 +15,9 @@ import {
 import { useLoaderStore } from '@/store/loaderStore'
 import { enterSuccessScreen } from '@/utils/bookingLifecycle'
 import { useQuery } from '@tanstack/react-query'
-import { useRouter } from 'expo-router'
-import { useEffect } from 'react'
-import { Animated, ScrollView, StyleSheet } from 'react-native'
+import { useFocusEffect, useRouter } from 'expo-router'
+import { useCallback, useEffect } from 'react'
+import { Animated, BackHandler, Platform, ScrollView, StyleSheet } from 'react-native'
 
 function SuccessContent({ confirmation }: { confirmation: BookingConfirmation }) {
   const router = useRouter()
@@ -66,6 +66,17 @@ export default function CharterSuccessScreen() {
   const confirmation = useBookingConfirmationStore((s) => s.confirmation)
   const hide = useLoaderStore((s) => s.hide)
   const resetState = useResetState()
+
+  // Block the Android hardware back button on the success screen so users can't
+  // navigate back into the completed payment flow. Returning true marks the
+  // press as handled, suppressing the default navigation.
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') return
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => true)
+      return () => subscription.remove()
+    }, []),
+  )
 
   useEffect(() => {
     enterSuccessScreen(hide, resetState)
