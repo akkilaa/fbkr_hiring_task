@@ -69,7 +69,7 @@ const SuccessTripSection = ({
           <View style={[styles.divider, { backgroundColor: theme.backgroundSelected }]} />
           <View style={styles.totalRow}>
             <Typography variant="label" style={{ color: theme.textSecondary }}>
-              Total
+              Total price
             </Typography>
             <Price amount={packagePrice} currency={packageCurrency} />
           </View>

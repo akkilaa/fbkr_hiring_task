@@ -1,16 +1,14 @@
-import type React from 'react'
-import CharterDescriptionSheet from '@/components/molecules/CharterDescriptionSheet'
-import type { CharterDescriptionSheetProps } from '@/components/molecules/CharterDescriptionSheet'
-import ChooseCharterDateSheet from '@/components/molecules/ChooseCharterDateSheet'
-import type { ChooseCharterDateSheetProps } from '@/components/molecules/ChooseCharterDateSheet'
-import ChooseCharterGuestsSheet from '@/components/molecules/ChooseCharterGuestsSheet'
-import type { ChooseCharterGuestsSheetProps } from '@/components/molecules/ChooseCharterGuestsSheet'
 import AddCreditCardSheet from '@/components/molecules/AddCreditCardSheet'
+import type { CharterDescriptionSheetProps } from '@/components/molecules/CharterDescriptionSheet'
+import CharterDescriptionSheet from '@/components/molecules/CharterDescriptionSheet'
+import ChooseCharterDateSheet from '@/components/molecules/ChooseCharterDateSheet'
+import ChooseCharterGuestsSheet from '@/components/molecules/ChooseCharterGuestsSheet'
+import type React from 'react'
 
 export type SheetRegistry = {
   charterDescription: React.ComponentType<CharterDescriptionSheetProps>
-  chooseCharterDate: React.ComponentType<ChooseCharterDateSheetProps>
-  chooseCharterGuests: React.ComponentType<ChooseCharterGuestsSheetProps>
+  chooseCharterDate: React.ComponentType<Record<string, never>>
+  chooseCharterGuests: React.ComponentType<Record<string, never>>
   addCreditCard: React.ComponentType<Record<string, never>>
 }
 

@@ -13,6 +13,7 @@ import { KeyboardController, KeyboardEvents } from 'react-native-keyboard-contro
 
 export interface SinglePageCheckoutHandle {
   advance: () => void
+  getPaymentOption: () => PaymentOption
 }
 
 const SinglePageCheckout = forwardRef<SinglePageCheckoutHandle>((_, ref) => {
@@ -32,6 +33,7 @@ const SinglePageCheckout = forwardRef<SinglePageCheckoutHandle>((_, ref) => {
       scrollToAnchor('details', false)
       personDetailsRef.current?.submit()
     },
+    getPaymentOption: () => paymentOption,
   }))
 
   // When the keyboard is still visible (return key press on phone field), KASV

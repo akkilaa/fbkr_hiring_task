@@ -42,7 +42,7 @@ export const SheetSlot = forwardRef<SheetSlotHandle, Props>(({ instance, onClose
     <BottomSheetModal
       ref={modalRef}
       enableDynamicSizing
-      maxDynamicContentSize={height * 0.92}
+      maxDynamicContentSize={height * 0.85}
       enablePanDownToClose
       backdropComponent={renderBackdrop}
       onDismiss={onClosed}

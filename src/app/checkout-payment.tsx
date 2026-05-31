@@ -35,6 +35,7 @@ export default function CheckoutPaymentScreen() {
       lastName,
       email,
       phone,
+      paymentMode: paymentRef.current?.getPaymentOption() ?? 'full',
       cardLast4: selectedCard.last4,
       cardBrand: selectedCard.brand,
     })
@@ -47,8 +48,11 @@ export default function CheckoutPaymentScreen() {
 
   return (
     <CheckoutShell
+      title="Payment"
       onBack={() => router.back()}
-      bottomBar={<CheckoutCta context="paymentStep" onBook={book} />}
+      bottomBar={
+        <CheckoutCta context="paymentStep" onGoToDetails={() => router.back()} onBook={book} />
+      }
     >
       <PaymentStepCheckout ref={paymentRef} />
     </CheckoutShell>

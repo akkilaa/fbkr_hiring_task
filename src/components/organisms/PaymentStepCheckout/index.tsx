@@ -1,9 +1,9 @@
-import CheckoutBreadcrumb from '@/components/molecules/CheckoutBreadcrumb'
 import BookingSummary from '@/components/molecules/BookingSummary'
 import CharterOverview from '@/components/molecules/CharterOverview'
+import CheckoutBreadcrumb from '@/components/molecules/CheckoutBreadcrumb'
 import PaymentMode, { type PaymentOption } from '@/components/molecules/PaymentMode'
-import { useCheckoutScroll } from '@/context/CheckoutScrollContext'
 import CreditCardSection from '@/components/organisms/CreditCardSection'
+import { useCheckoutScroll } from '@/context/CheckoutScrollContext'
 import { useCharterPackages } from '@/hooks/useCharters'
 import { useCharterBookingStore } from '@/store/charterBookingStore'
 import { forwardRef, useImperativeHandle, useState } from 'react'
@@ -11,6 +11,7 @@ import { StyleSheet, View } from 'react-native'
 
 export interface PaymentStepCheckoutHandle {
   advance: () => void
+  getPaymentOption: () => PaymentOption
 }
 
 const PaymentStepCheckout = forwardRef<PaymentStepCheckoutHandle>((_, ref) => {
@@ -24,6 +25,7 @@ const PaymentStepCheckout = forwardRef<PaymentStepCheckoutHandle>((_, ref) => {
     advance: () => {
       // TODO: submit payment
     },
+    getPaymentOption: () => paymentOption,
   }))
 
   return (

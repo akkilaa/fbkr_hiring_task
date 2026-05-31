@@ -6,16 +6,26 @@ import { StyleSheet, TextInput, View } from 'react-native'
 interface PhoneInputProps {
   label?: string
   error?: string
+  defaultValue?: string
   onChangeText?: (value: string) => void
   onSubmitEditing?: () => void
 }
 
+function parseStoredPhone(value: string): { countryCode: string; number: string } {
+  if (!value) return { countryCode: '', number: '' }
+  const stripped = value.startsWith('+') ? value.slice(1) : value
+  const spaceIdx = stripped.indexOf(' ')
+  if (spaceIdx === -1) return { countryCode: stripped, number: '' }
+  return { countryCode: stripped.slice(0, spaceIdx), number: stripped.slice(spaceIdx + 1) }
+}
+
 const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
-  ({ label, error, onChangeText, onSubmitEditing }, ref) => {
+  ({ label, error, defaultValue, onChangeText, onSubmitEditing }, ref) => {
     const theme = useTheme()
     const phoneRef = useRef<TextInput>(null)
-    const countryCode = useRef('')
-    const phoneNumber = useRef('')
+    const parsed = parseStoredPhone(defaultValue ?? '')
+    const countryCode = useRef(parsed.countryCode)
+    const phoneNumber = useRef(parsed.number)
     const hasError = !!error
 
     const emit = () => {
@@ -43,9 +53,11 @@ const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
             maxLength={3}
             returnKeyType="next"
             submitBehavior="submit"
+            defaultValue={parsed.countryCode}
             onChangeText={(text) => {
               countryCode.current = text
               emit()
+              if (text.length === 3) phoneRef.current?.focus()
             }}
             onSubmitEditing={() => phoneRef.current?.focus()}
           />
@@ -59,6 +71,7 @@ const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
             autoComplete="tel"
             textContentType="telephoneNumber"
             returnKeyType="done"
+            defaultValue={parsed.number}
             onChangeText={(text) => {
               phoneNumber.current = text
               emit()

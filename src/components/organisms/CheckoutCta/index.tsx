@@ -8,6 +8,8 @@ interface CheckoutCtaProps {
   onSubmitDetails?: () => void
   /** Navigate to the dedicated payment screen (stepped flow). */
   onGoToPayment?: () => void
+  /** Navigate back to the details step when details are missing (stepped flow). */
+  onGoToDetails?: () => void
   /** Finalize the booking. */
   onBook?: () => void
 }
@@ -19,13 +21,20 @@ const noop = () => {}
  * user's next step. Scroll-to-section is resolved locally via the shell's scroll
  * context; form submission, navigation and booking are injected by the screen.
  */
-const CheckoutCta = ({ context, onSubmitDetails, onGoToPayment, onBook }: CheckoutCtaProps) => {
+const CheckoutCta = ({
+  context,
+  onSubmitDetails,
+  onGoToPayment,
+  onGoToDetails,
+  onBook,
+}: CheckoutCtaProps) => {
   const { scrollToAnchor } = useCheckoutScroll()
 
   const cta = useCheckoutCta(context, {
     submitDetails: onSubmitDetails ?? noop,
     goToCard: () => scrollToAnchor('card'),
     goToPayment: onGoToPayment ?? noop,
+    goToDetails: onGoToDetails ?? noop,
     book: onBook ?? noop,
   })
 

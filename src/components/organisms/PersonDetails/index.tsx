@@ -12,13 +12,25 @@ const schema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.email('Invalid email address'),
-  phone: z.string().min(7, 'Phone number is required'),
+  phone: z
+    .string()
+    .regex(/^\+?\d[\d\s\-()]*$/, 'Enter a valid phone number')
+    .refine((val) => val.replace(/\D/g, '').length >= 7, 'Phone number is too short'),
 })
 
 type FormErrors = Partial<Record<keyof z.infer<typeof schema>, string>>
 type FieldName = keyof z.infer<typeof schema>
 
 const FIELD_ORDER: FieldName[] = ['firstName', 'lastName', 'email', 'phone']
+
+const getFieldErrors = (issues: z.ZodIssue[]): FormErrors => {
+  const fieldErrors: FormErrors = {}
+  for (const issue of issues) {
+    const field = issue.path[0] as FieldName
+    if (!fieldErrors[field]) fieldErrors[field] = issue.message
+  }
+  return fieldErrors
+}
 
 export interface PersonDetailsHandle {
   submit: () => void
@@ -32,7 +44,6 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
   const theme = useTheme()
   const { assureFocusedInputVisible } = useCheckoutScroll()
   const setPersonDetails = usePersonDetailsStore((s) => s.setPersonDetails)
-  const resetPersonDetails = usePersonDetailsStore((s) => s.reset)
 
   const firstNameRef = useRef<TextInput>(null)
   const lastNameRef = useRef<TextInput>(null)
@@ -46,26 +57,41 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
     phone: phoneRef,
   }
 
-  const values = useRef({ firstName: '', lastName: '', email: '', phone: '' })
+  const { firstName, lastName, email, phone } = usePersonDetailsStore.getState()
+  const values = useRef({ firstName, lastName, email, phone })
   const [errors, setErrors] = useState<FormErrors>({})
   const debounceTimers = useRef<Partial<Record<FieldName, ReturnType<typeof setTimeout>>>>({})
+
+  const validateCurrentValues = () => {
+    const result = schema.safeParse(values.current)
+    if (result.success) {
+      return { isValid: true as const, data: result.data }
+    }
+
+    return {
+      isValid: false as const,
+      errors: getFieldErrors(result.error.issues),
+    }
+  }
 
   const handleChange = (field: FieldName, text: string) => {
     values.current[field] = text
     clearTimeout(debounceTimers.current[field])
+
     debounceTimers.current[field] = setTimeout(() => {
-      const result = schema.safeParse(values.current)
-      if (result.success) {
+      const validation = validateCurrentValues()
+      if (validation.isValid) {
         setErrors((prev) => ({ ...prev, [field]: undefined }))
-        setPersonDetails(result.data)
+        setPersonDetails(validation.data)
       } else {
-        const allErrors: FormErrors = {}
-        for (const issue of result.error.issues) {
-          const f = issue.path[0] as FieldName
-          if (!allErrors[f]) allErrors[f] = issue.message
-        }
-        setErrors((prev) => ({ ...prev, [field]: allErrors[field] }))
-        resetPersonDetails()
+        const { errors: fieldErrors } = validation
+        setErrors((prev) => ({ ...prev, [field]: fieldErrors[field] }))
+        setPersonDetails({
+          firstName: fieldErrors.firstName ? '' : values.current.firstName,
+          lastName: fieldErrors.lastName ? '' : values.current.lastName,
+          email: fieldErrors.email ? '' : values.current.email,
+          phone: fieldErrors.phone ? '' : values.current.phone,
+        })
       }
     }, 500)
   }
@@ -73,19 +99,15 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
   const handleSubmit = () => {
     for (const timer of Object.values(debounceTimers.current)) clearTimeout(timer)
 
-    const result = schema.safeParse(values.current)
-    if (!result.success) {
-      const fieldErrors: FormErrors = {}
-      for (const issue of result.error.issues) {
-        const f = issue.path[0] as FieldName
-        if (!fieldErrors[f]) fieldErrors[f] = issue.message
-      }
-      const firstInvalid = FIELD_ORDER.find((f) => fieldErrors[f])
+    const validation = validateCurrentValues()
+    if (!validation.isValid) {
+      const firstInvalid = FIELD_ORDER.find((field) => validation.errors[field])
       if (firstInvalid) fieldRefs[firstInvalid].current?.focus()
       return
     }
+
     setErrors({})
-    setPersonDetails(result.data)
+    setPersonDetails(validation.data)
     onSubmit()
   }
 
@@ -106,6 +128,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="givenName"
           returnKeyType="next"
           submitBehavior="submit"
+          defaultValue={values.current.firstName}
           error={errors.firstName}
           onChangeText={(text) => handleChange('firstName', text)}
           onSubmitEditing={() => {
@@ -122,6 +145,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="familyName"
           returnKeyType="next"
           submitBehavior="submit"
+          defaultValue={values.current.lastName}
           error={errors.lastName}
           onChangeText={(text) => handleChange('lastName', text)}
           onSubmitEditing={() => {
@@ -139,6 +163,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="emailAddress"
           returnKeyType="next"
           submitBehavior="submit"
+          defaultValue={values.current.email}
           error={errors.email}
           onChangeText={(text) => handleChange('email', text)}
           onSubmitEditing={() => {
@@ -149,6 +174,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
         <PhoneInput
           ref={phoneRef}
           label="Phone number"
+          defaultValue={values.current.phone}
           error={errors.phone}
           onChangeText={(text) => handleChange('phone', text)}
           onSubmitEditing={handleSubmit}

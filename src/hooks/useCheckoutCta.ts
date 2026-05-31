@@ -18,6 +18,8 @@ export interface CheckoutCtaActions {
   goToCard: () => void
   /** Advance the stepped flow to the dedicated payment screen. */
   goToPayment: () => void
+  /** Navigate back to the details step (stepped flow only). */
+  goToDetails: () => void
   /** Finalize the booking. */
   book: () => void
 }
@@ -32,6 +34,7 @@ const LABELS = {
   continue: 'Continue',
   continueToPayment: 'Continue to payment',
   addCard: 'Add credit card',
+  chooseCard: 'Choose credit card',
   book: 'Book now',
 } as const
 
@@ -45,7 +48,9 @@ export function useCheckoutCta(
   actions: CheckoutCtaActions,
 ): CheckoutCta {
   const detailsComplete = usePersonDetailsStore(selectIsPersonDetailsComplete)
+  const hasSavedCards = useCreditCardStore((s) => s.cards.length > 0)
   const cardSelected = useCreditCardStore((s) => s.selectedCardId !== null)
+  const cardCtaLabel = hasSavedCards ? LABELS.chooseCard : LABELS.addCard
 
   switch (context) {
     case 'detailsStep':
@@ -54,14 +59,15 @@ export function useCheckoutCta(
         : { label: LABELS.addDetails, onPress: actions.submitDetails }
 
     case 'paymentStep':
+      if (!detailsComplete) return { label: LABELS.addDetails, onPress: actions.goToDetails }
       return cardSelected
         ? { label: LABELS.book, onPress: actions.book }
-        : { label: LABELS.addCard, onPress: actions.goToCard }
+        : { label: cardCtaLabel, onPress: actions.goToCard }
 
     case 'single':
     default:
       if (!detailsComplete) return { label: LABELS.addDetails, onPress: actions.submitDetails }
-      if (!cardSelected) return { label: LABELS.addCard, onPress: actions.goToCard }
+      if (!cardSelected) return { label: cardCtaLabel, onPress: actions.goToCard }
       return { label: LABELS.book, onPress: actions.book }
   }
 }

@@ -20,9 +20,10 @@ interface CheckoutShellProps {
   children: React.ReactNode
   bottomBar?: React.ReactNode
   onBack?: () => void
+  title?: string
 }
 
-const CheckoutShell = ({ children, bottomBar, onBack }: CheckoutShellProps) => {
+const CheckoutShell = ({ children, bottomBar, onBack, title = 'Checkout' }: CheckoutShellProps) => {
   const insets = useSafeAreaInsets()
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null)
   const anchors = useRef<Partial<Record<CheckoutAnchorId, number>>>({})
@@ -55,7 +56,7 @@ const CheckoutShell = ({ children, bottomBar, onBack }: CheckoutShellProps) => {
     <CheckoutScrollContext.Provider value={scroll}>
       <View style={styles.root}>
         <SafeAreaView edges={['top', 'left', 'right']}>
-          <NavigationHeader title="Checkout" onBack={onBack} />
+          <NavigationHeader title={title} onBack={onBack} />
         </SafeAreaView>
         <KeyboardAwareScrollView
           ref={scrollRef}

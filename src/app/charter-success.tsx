@@ -5,8 +5,8 @@ import SuccessContactSection from '@/components/organisms/SuccessContactSection'
 import SuccessHeroSection from '@/components/organisms/SuccessHeroSection'
 import SuccessPaymentSection from '@/components/organisms/SuccessPaymentSection'
 import SuccessTripSection from '@/components/organisms/SuccessTripSection'
-import { useSuccessAnimation } from '@/hooks/useSuccessAnimation'
 import { useResetState } from '@/hooks/useResetState'
+import { useSuccessAnimation } from '@/hooks/useSuccessAnimation'
 import { charterQueryOptions } from '@/services/charter/charter.queries'
 import {
   type BookingConfirmation,
@@ -46,7 +46,11 @@ function SuccessContent({ confirmation }: { confirmation: BookingConfirmation })
             packageCurrency={selectedPackage?.currency}
           />
           <SuccessContactSection confirmation={confirmation} />
-          <SuccessPaymentSection confirmation={confirmation} />
+          <SuccessPaymentSection
+            confirmation={confirmation}
+            packagePrice={selectedPackage?.price}
+            packageCurrency={selectedPackage?.currency}
+          />
         </Animated.View>
       </ScrollView>
 

@@ -57,6 +57,7 @@ export default function CheckoutScreen() {
       lastName,
       email,
       phone,
+      paymentMode: singleRef.current?.getPaymentOption() ?? 'full',
       cardLast4: selectedCard.last4,
       cardBrand: selectedCard.brand,
     })
@@ -70,6 +71,7 @@ export default function CheckoutScreen() {
 
   return (
     <CheckoutShell
+      title={isStepped ? 'Checkout Details' : 'Checkout'}
       onBack={() => router.back()}
       bottomBar={
         <CheckoutCta

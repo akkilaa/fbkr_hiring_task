@@ -5,6 +5,7 @@ export interface BookingConfirmation {
   charterId: number
   packageId: number
   date: Date
+  paymentMode: 'full' | 'deposit'
   adults: number
   children: number
   firstName: string
