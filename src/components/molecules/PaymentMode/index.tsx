@@ -1,3 +1,4 @@
+import appConfiguration, { type PaymentModeTemplateValues } from '@/appConfiguration'
 import Price from '@/components/atoms/Price'
 import RadioButton from '@/components/atoms/RadioButton'
 import Typography from '@/components/atoms/Typography'
@@ -19,59 +20,87 @@ export interface PaymentModeProps {
   onChange: (value: PaymentOption) => void
 }
 
+const formatCurrency = (amount: number, currency: string) => {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  } catch {
+    return `${currency} ${amount}`
+  }
+}
+
+const renderTemplate = (template: string, values: PaymentModeTemplateValues) =>
+  template.replace(/\[([a-zA-Z]+)\]/g, (_, token: keyof PaymentModeTemplateValues) => {
+    return values[token] ?? ''
+  })
+
 const PaymentMode = ({ price, currency, tripDate, value, onChange }: PaymentModeProps) => {
   const theme = useTheme()
   const deposit = Math.round(price * DEPOSIT_PERCENTAGE)
   const rest = price - deposit
   const depositPercent = Math.round(DEPOSIT_PERCENTAGE * 100)
   const selectedAmount = value === PAYMENT_OPTION_FULL ? price : deposit
+  const templateValues: PaymentModeTemplateValues = {
+    price: formatCurrency(price, currency),
+    deposit: formatCurrency(deposit, currency),
+    rest: formatCurrency(rest, currency),
+    depositPercent: String(depositPercent),
+    tripDate: formatBookingDate(tripDate),
+  }
+  const fullLabel = renderTemplate(appConfiguration.paymentMode.full, templateValues)
+  const fullDescription = renderTemplate(
+    appConfiguration.paymentMode.fullDescription,
+    templateValues,
+  )
+  const depositLabel = renderTemplate(appConfiguration.paymentMode.deposit, templateValues)
+  const depositDescription = renderTemplate(
+    appConfiguration.paymentMode.depositDescription,
+    templateValues,
+  )
+  const priceToPayNowLabel = renderTemplate(
+    appConfiguration.paymentMode.priceToPayNowLabel,
+    templateValues,
+  )
+  const remainingBalanceLabel = renderTemplate(
+    appConfiguration.paymentMode.remainingBalanceLabel,
+    templateValues,
+  )
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Typography variant="title3" style={styles.title}>
-        How would you like to pay?
+        {appConfiguration.paymentMode.title}
       </Typography>
 
       <View style={styles.options}>
         <RadioButton
           selected={value === PAYMENT_OPTION_FULL}
           onPress={() => onChange(PAYMENT_OPTION_FULL)}
-          label={
-            <View style={styles.labelInline}>
-              <Typography variant="bodyMedium">Pay</Typography>
-              <Price amount={price} currency={currency} />
-              <Typography variant="bodyMedium">now</Typography>
-            </View>
-          }
-          description="Pay now in full and save on potential credit card fees at the dock"
+          label={fullLabel}
+          description={fullDescription}
         />
         <RadioButton
           selected={value === PAYMENT_OPTION_DEPOSIT}
           onPress={() => onChange(PAYMENT_OPTION_DEPOSIT)}
-          label={
-            <View style={styles.labelInline}>
-              <Typography variant="bodyMedium">Pay</Typography>
-              <Price amount={deposit} currency={currency} />
-              <Typography variant="bodyMedium">deposit now,</Typography>
-              <Price amount={rest} currency={currency} />
-              <Typography variant="bodyMedium">later</Typography>
-            </View>
-          }
-          description={`Pay ${depositPercent}% now, later remaining balance. Fees may apply.`}
+          label={depositLabel}
+          description={depositDescription}
         />
       </View>
 
       <View style={[styles.priceSection, { borderTopColor: theme.backgroundSelected }]}>
         <View style={styles.priceRow}>
           <Typography variant="label" style={{ color: theme.textSecondary }}>
-            Price to pay now
+            {priceToPayNowLabel}
           </Typography>
           <Price amount={selectedAmount} currency={currency} />
         </View>
         {value === PAYMENT_OPTION_DEPOSIT && (
           <View style={styles.priceRow}>
             <Typography variant="label" style={{ color: theme.textSecondary }}>
-              Remaining balance ({formatBookingDate(tripDate)})
+              {remainingBalanceLabel}
             </Typography>
             <Price amount={rest} currency={currency} />
           </View>
@@ -92,13 +121,6 @@ const styles = StyleSheet.create({
   },
   options: {
     gap: 14,
-  },
-  labelInline: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    flexWrap: 'wrap',
-    columnGap: 6,
-    rowGap: 2,
   },
   priceSection: {
     gap: 10,

@@ -1,6 +1,5 @@
-import { type CheckoutVariant } from '@/constants/checkout'
+import appConfiguration, { type CheckoutVariant } from '@/appConfiguration'
 
 export const useCheckoutVariant = (): CheckoutVariant => {
-  // Here goes real A/B experiment logic
-  return 'stepped'
+  return appConfiguration.checkout.variant
 }

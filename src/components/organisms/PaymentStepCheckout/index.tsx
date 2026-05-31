@@ -23,9 +23,7 @@ const PaymentStepCheckout = forwardRef<PaymentStepCheckoutHandle>((_, ref) => {
   const selectedPackage = packages?.find((p) => p.id === selectedPackageId)
 
   useImperativeHandle(ref, () => ({
-    advance: () => {
-      // TODO: submit payment
-    },
+    advance: () => {},
     getPaymentOption: () => paymentOption,
   }))
 

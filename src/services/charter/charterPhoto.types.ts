@@ -47,7 +47,7 @@ export interface CharterPhotoDTO extends Omit<
   date_updated: string
   url_pattern: string
 }
-// TODO: Check this
+
 export const mapCharterPhoto = (dto: CharterPhotoDTO): CharterPhoto => ({
   id: Number(dto.id),
   charterId: Number(dto.charter_idcharter),
