@@ -1,56 +1,49 @@
-# Welcome to your Expo app 👋
+# fbkr Hiring Task
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Installation & Running
 
-## Get started
-
-1. Install dependencies
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Run on iOS simulator (macOS required):
+
+   ```bash
+   npm run ios
+   ```
+
+3. Run on Android device: Download [Expo Go](https://expo.dev/go) from the Play Store, then start the dev server and scan the QR code:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Developer's Notes
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Configuration-Driven Development (CDD)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+I hope the checkout implementation doesn't come across as overcomplicated. Since the app was recently refactored toward a CDD approach, I wanted the checkout to fully embrace that pattern. The configuration in `appConfiguration.ts` is currently hardcoded, but it can easily be swapped out for a backend response at the right time, enabling proper A/B testing with no structural changes required.
 
-## Get a fresh project
+**Two checkout modes:**
 
-When you're ready, run:
+1. **Multi-step** — After selecting a package, the user moves through a two step checkout: the first step collects personal details, the second handles payment and booking confirmation.
+2. **Single-step** — Both steps are combined into a single screen.
 
-```bash
-npm run reset-project
-```
+**Configuration example — payment mode:**
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+I demonstrated how the payment mode UI can be driven entirely by configuration: button labels, titles, and field labels can all be swapped through `appConfiguration.ts`. I would have liked to extend this pattern further across the app, but ran out of time.
 
-### Other setup steps
+### Image Gallery
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+The `ImageGallery` component initially renders 3 photos and preloads a batch of 30 in the background so that swiping feels instant from the start. As the user scrolls toward the end of a batch, the next one is preloaded automatically, ensuring a consistently smooth experience throughout.
 
-## Learn more
+### Architecture & Scalability
 
-To learn more about developing your project with Expo, look at the following resources:
+I tried to configure as many components as possible for a scalable, production-ready solution:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Bottom Sheet** — has a registry and a clean pattern for managing many sheets without coupling.
+- **Icon component** — supports both remote SVGs loaded from a URL and local assets from the project.
+- **Project structure** — follows Atomic Design, splitting reusable components into atoms, molecules, and organisms for better reusability and discoverability.
+- **State management** — React Query for server state, Zustand for client state.
