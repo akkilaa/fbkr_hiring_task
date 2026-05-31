@@ -14,6 +14,9 @@ const schema = z.object({
 })
 
 type FormErrors = Partial<Record<keyof z.infer<typeof schema>, string>>
+type FieldName = keyof z.infer<typeof schema>
+
+const FIELD_ORDER: FieldName[] = ['firstName', 'lastName', 'email', 'phone']
 
 export interface PersonDetailsHandle {
   submit: () => void
@@ -26,35 +29,55 @@ interface PersonDetailsProps {
 const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onSubmit }, ref) => {
   const theme = useTheme()
   const setPersonDetails = usePersonDetailsStore((s) => s.setPersonDetails)
+  const resetPersonDetails = usePersonDetailsStore((s) => s.reset)
 
   const firstNameRef = useRef<TextInput>(null)
   const lastNameRef = useRef<TextInput>(null)
   const emailRef = useRef<TextInput>(null)
   const phoneRef = useRef<TextInput>(null)
 
-  const values = useRef({ firstName: '', lastName: '', email: '', phone: '' })
+  const fieldRefs = {
+    firstName: firstNameRef,
+    lastName: lastNameRef,
+    email: emailRef,
+    phone: phoneRef,
+  }
 
+  const values = useRef({ firstName: '', lastName: '', email: '', phone: '' })
   const [errors, setErrors] = useState<FormErrors>({})
+  const debounceTimers = useRef<Partial<Record<FieldName, ReturnType<typeof setTimeout>>>>({})
+
+  const handleChange = (field: FieldName, text: string) => {
+    values.current[field] = text
+    clearTimeout(debounceTimers.current[field])
+    debounceTimers.current[field] = setTimeout(() => {
+      const result = schema.safeParse(values.current)
+      if (result.success) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }))
+        setPersonDetails(result.data)
+      } else {
+        const allErrors: FormErrors = {}
+        for (const issue of result.error.issues) {
+          const f = issue.path[0] as FieldName
+          if (!allErrors[f]) allErrors[f] = issue.message
+        }
+        setErrors((prev) => ({ ...prev, [field]: allErrors[field] }))
+        resetPersonDetails()
+      }
+    }, 500)
+  }
 
   const handleSubmit = () => {
+    for (const timer of Object.values(debounceTimers.current)) clearTimeout(timer)
+
     const result = schema.safeParse(values.current)
     if (!result.success) {
       const fieldErrors: FormErrors = {}
       for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof FormErrors
-        if (!fieldErrors[field]) fieldErrors[field] = issue.message
+        const f = issue.path[0] as FieldName
+        if (!fieldErrors[f]) fieldErrors[f] = issue.message
       }
-      setErrors(fieldErrors)
-      // Focusing the first invalid field scrolls it into view via keyboard-aware scroll.
-      const fieldRefs = {
-        firstName: firstNameRef,
-        lastName: lastNameRef,
-        email: emailRef,
-        phone: phoneRef,
-      }
-      const firstInvalid = (Object.keys(fieldRefs) as (keyof typeof fieldRefs)[]).find(
-        (field) => fieldErrors[field],
-      )
+      const firstInvalid = FIELD_ORDER.find((f) => fieldErrors[f])
       if (firstInvalid) fieldRefs[firstInvalid].current?.focus()
       return
     }
@@ -80,9 +103,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="givenName"
           returnKeyType="next"
           error={errors.firstName}
-          onChangeText={(text) => {
-            values.current.firstName = text
-          }}
+          onChangeText={(text) => handleChange('firstName', text)}
           onSubmitEditing={() => setTimeout(() => lastNameRef.current?.focus(), 50)}
         />
         <Input
@@ -94,9 +115,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="familyName"
           returnKeyType="next"
           error={errors.lastName}
-          onChangeText={(text) => {
-            values.current.lastName = text
-          }}
+          onChangeText={(text) => handleChange('lastName', text)}
           onSubmitEditing={() => setTimeout(() => emailRef.current?.focus(), 50)}
         />
         <Input
@@ -109,9 +128,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="emailAddress"
           returnKeyType="next"
           error={errors.email}
-          onChangeText={(text) => {
-            values.current.email = text
-          }}
+          onChangeText={(text) => handleChange('email', text)}
           onSubmitEditing={() => setTimeout(() => phoneRef.current?.focus(), 50)}
         />
         <Input
@@ -123,9 +140,7 @@ const PersonDetails = forwardRef<PersonDetailsHandle, PersonDetailsProps>(({ onS
           textContentType="telephoneNumber"
           returnKeyType="done"
           error={errors.phone}
-          onChangeText={(text) => {
-            values.current.phone = text
-          }}
+          onChangeText={(text) => handleChange('phone', text)}
           onSubmitEditing={handleSubmit}
         />
       </View>

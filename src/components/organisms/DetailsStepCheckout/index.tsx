@@ -3,8 +3,6 @@ import CharterOverview from '@/components/molecules/CharterOverview'
 import CheckoutBreadcrumb from '@/components/molecules/CheckoutBreadcrumb'
 import PersonDetails, { type PersonDetailsHandle } from '@/components/organisms/PersonDetails'
 import { useCheckoutScroll } from '@/context/CheckoutScrollContext'
-import { useLoaderStore } from '@/store/loaderStore'
-import { useRouter } from 'expo-router'
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -12,48 +10,43 @@ export interface DetailsStepCheckoutHandle {
   advance: () => void
 }
 
-const DetailsStepCheckout = forwardRef<DetailsStepCheckoutHandle>((_, ref) => {
-  const router = useRouter()
-  const personDetailsRef = useRef<PersonDetailsHandle>(null)
-  const { registerAnchor, scrollToAnchor } = useCheckoutScroll()
-  const show = useLoaderStore((s) => s.show)
-  const hide = useLoaderStore((s) => s.hide)
+interface Props {
+  onDetailsSubmit: () => void
+}
 
-  useImperativeHandle(ref, () => ({
-    advance: () => {
-      scrollToAnchor('details', false)
-      personDetailsRef.current?.submit()
-    },
-  }))
+const DetailsStepCheckout = forwardRef<DetailsStepCheckoutHandle, Props>(
+  ({ onDetailsSubmit }, ref) => {
+    const personDetailsRef = useRef<PersonDetailsHandle>(null)
+    const { registerAnchor, scrollToAnchor } = useCheckoutScroll()
 
-  const handleDetailsSubmit = () => {
-    show()
-    setTimeout(() => {
-      hide()
-      router.push('/checkout-payment')
-    }, 2000)
-  }
+    useImperativeHandle(ref, () => ({
+      advance: () => {
+        scrollToAnchor('details', false)
+        personDetailsRef.current?.submit()
+      },
+    }))
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.section}>
-        <CheckoutBreadcrumb variant="stepped" currentStep={1} />
+    return (
+      <View style={styles.container}>
+        <View style={styles.section}>
+          <CheckoutBreadcrumb variant="stepped" currentStep={1} />
+        </View>
+        <View style={styles.section}>
+          <CharterOverview locked hideDescription hideDropdowns />
+        </View>
+        <View style={styles.section}>
+          <BookingSummary />
+        </View>
+        <View
+          style={styles.section}
+          onLayout={(e) => registerAnchor('details', e.nativeEvent.layout.y)}
+        >
+          <PersonDetails ref={personDetailsRef} onSubmit={onDetailsSubmit} />
+        </View>
       </View>
-      <View style={styles.section}>
-        <CharterOverview locked hideDescription hideDropdowns />
-      </View>
-      <View style={styles.section}>
-        <BookingSummary />
-      </View>
-      <View
-        style={styles.section}
-        onLayout={(e) => registerAnchor('details', e.nativeEvent.layout.y)}
-      >
-        <PersonDetails ref={personDetailsRef} onSubmit={handleDetailsSubmit} />
-      </View>
-    </View>
-  )
-})
+    )
+  },
+)
 
 const styles = StyleSheet.create({
   container: {

@@ -7,6 +7,7 @@ import { detectCardBrand, useCreditCardStore } from '@/store/creditCardStore'
 import { BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { useRef, useState } from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
+import { KeyboardController, KeyboardEvents } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { creditCardSchema, formatCardNumber, formatExpiry, type FormErrors } from './utils'
 
@@ -41,14 +42,31 @@ const AddCreditCardSheet = () => {
       setErrors(e)
       return
     }
-    const digits = cardNumber.replace(/\D/g, '')
-    addCard({
-      holderName: holderName.trim(),
-      last4: digits.slice(-4),
-      expiry,
-      brand: detectCardBrand(digits),
-    })
-    dismiss()
+
+    const commit = () => {
+      const digits = cardNumber.replace(/\D/g, '')
+      addCard({
+        holderName: holderName.trim(),
+        last4: digits.slice(-4),
+        expiry,
+        brand: detectCardBrand(digits),
+      })
+      dismiss()
+    }
+
+    // keyboardShouldPersistTaps="handled" means button taps don't auto-blur inputs,
+    // so the keyboard can still be visible when Save is pressed. Dismissing the sheet
+    // while the keyboard is up causes a flash because both animations run at once.
+    // Let the keyboard fully hide first, then dismiss the sheet cleanly.
+    if (KeyboardController.isVisible()) {
+      KeyboardController.dismiss()
+      const sub = KeyboardEvents.addListener('keyboardDidHide', () => {
+        sub.remove()
+        commit()
+      })
+    } else {
+      commit()
+    }
   }
 
   return (

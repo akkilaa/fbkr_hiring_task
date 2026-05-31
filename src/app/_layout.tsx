@@ -2,6 +2,7 @@ import { useReactQueryDevTools } from '@dev-plugins/react-query'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { DefaultTheme, Stack, ThemeProvider } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
@@ -12,6 +13,8 @@ import GlobalLoader from '@/components/atoms/GlobalLoader'
 import { queryClient } from '@/lib/query-client'
 import { useReactQueryNative } from '@/lib/query-native'
 import { StyleSheet } from 'react-native'
+
+SplashScreen.preventAutoHideAsync()
 
 function AppProviders({ children }: { children: React.ReactNode }) {
   useReactQueryDevTools(queryClient)
@@ -49,5 +52,5 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  gestureHandler: { flex: 1, backgroundColor: '#ffffff' },
+  gestureHandler: { flex: 1, backgroundColor: '#208AEF' },
 })

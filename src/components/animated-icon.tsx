@@ -1,35 +1,28 @@
+import { FishingBookerLogo } from '@/components/atoms/FishingBookerLogo'
 import { Image } from 'expo-image'
-import { useState } from 'react'
+import * as SplashScreen from 'expo-splash-screen'
+import { useEffect, useState } from 'react'
 import { Dimensions, StyleSheet, View } from 'react-native'
 import Animated, { Easing, Keyframe } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90
-const DURATION = 600
+const DURATION = 1300
+
+const splashKeyframe = new Keyframe({
+  0: { opacity: 1 },
+  65: { opacity: 1 },
+  100: { opacity: 0 },
+})
 
 export function AnimatedSplashOverlay() {
   const [visible, setVisible] = useState(true)
 
-  if (!visible) return null
+  useEffect(() => {
+    SplashScreen.hideAsync()
+  }, [])
 
-  const splashKeyframe = new Keyframe({
-    0: {
-      transform: [{ scale: INITIAL_SCALE_FACTOR }],
-      opacity: 1,
-    },
-    20: {
-      opacity: 1,
-    },
-    70: {
-      opacity: 0,
-      easing: Easing.elastic(0.7),
-    },
-    100: {
-      opacity: 0,
-      transform: [{ scale: 1 }],
-      easing: Easing.elastic(0.7),
-    },
-  })
+  if (!visible) return null
 
   return (
     <Animated.View
@@ -40,7 +33,9 @@ export function AnimatedSplashOverlay() {
         }
       })}
       style={styles.backgroundSolidColor}
-    />
+    >
+      <FishingBookerLogo />
+    </Animated.View>
   )
 }
 
@@ -128,5 +123,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     backgroundColor: '#208AEF',
     zIndex: 1000,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

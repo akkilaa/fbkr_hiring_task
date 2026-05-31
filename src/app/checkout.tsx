@@ -28,6 +28,15 @@ export default function CheckoutScreen() {
   const { firstName, lastName, email, phone } = usePersonDetailsStore()
   const { cards, selectedCardId } = useCreditCardStore()
   const show = useLoaderStore((s) => s.show)
+  const hide = useLoaderStore((s) => s.hide)
+
+  const handleDetailsSubmit = () => {
+    show()
+    setTimeout(() => {
+      hide()
+      router.push('/checkout-payment')
+    }, 2000)
+  }
 
   const submitDetails = () => {
     if (isStepped) detailsRef.current?.advance()
@@ -72,7 +81,7 @@ export default function CheckoutScreen() {
       }
     >
       {isStepped ? (
-        <DetailsStepCheckout ref={detailsRef} />
+        <DetailsStepCheckout ref={detailsRef} onDetailsSubmit={handleDetailsSubmit} />
       ) : (
         <SinglePageCheckout ref={singleRef} />
       )}

@@ -2,8 +2,8 @@ import CheckmarkIcon from '@/assets/icons/checkmark.svg'
 import Icon from '@/components/atoms/Icon'
 import Typography from '@/components/atoms/Typography'
 import { useTheme } from '@/hooks/use-theme'
-import { Animated, StyleSheet, View } from 'react-native'
 import type { StyleProp, ViewStyle } from 'react-native'
+import { Animated, StyleSheet, View } from 'react-native'
 
 interface SuccessHeroSectionProps {
   circleScale: Animated.Value
