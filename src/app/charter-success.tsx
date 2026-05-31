@@ -13,6 +13,7 @@ import {
   useBookingConfirmationStore,
 } from '@/store/bookingConfirmationStore'
 import { useLoaderStore } from '@/store/loaderStore'
+import { enterSuccessScreen } from '@/utils/bookingLifecycle'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
@@ -67,8 +68,7 @@ export default function CharterSuccessScreen() {
   const resetState = useResetState()
 
   useEffect(() => {
-    hide()
-    resetState()
+    enterSuccessScreen(hide, resetState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

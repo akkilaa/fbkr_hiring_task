@@ -29,6 +29,12 @@ export interface CheckoutCta {
   onPress: () => void
 }
 
+interface CheckoutCtaState {
+  detailsComplete: boolean
+  hasSavedCards: boolean
+  cardSelected: boolean
+}
+
 const LABELS = {
   addDetails: 'Add your details',
   continue: 'Continue',
@@ -50,6 +56,15 @@ export function useCheckoutCta(
   const detailsComplete = usePersonDetailsStore(selectIsPersonDetailsComplete)
   const hasSavedCards = useCreditCardStore((s) => s.cards.length > 0)
   const cardSelected = useCreditCardStore((s) => s.selectedCardId !== null)
+  return resolveCheckoutCta(context, { detailsComplete, hasSavedCards, cardSelected }, actions)
+}
+
+export function resolveCheckoutCta(
+  context: CheckoutCtaContext,
+  state: CheckoutCtaState,
+  actions: CheckoutCtaActions,
+): CheckoutCta {
+  const { detailsComplete, hasSavedCards, cardSelected } = state
   const cardCtaLabel = hasSavedCards ? LABELS.chooseCard : LABELS.addCard
 
   switch (context) {

@@ -12,6 +12,7 @@ import { useCharterBookingStore } from '@/store/charterBookingStore'
 import { useCreditCardStore } from '@/store/creditCardStore'
 import { useLoaderStore } from '@/store/loaderStore'
 import { usePersonDetailsStore } from '@/store/personDetailsStore'
+import { buildBookingConfirmation } from '@/utils/bookingConfirmation'
 import { useRouter } from 'expo-router'
 import { useRef } from 'react'
 
@@ -45,9 +46,7 @@ export default function CheckoutScreen() {
 
   const book = () => {
     const selectedCard = cards.find((c) => c.id === selectedCardId)
-    if (!charterId || !selectedPackageId || !selectedCard) return
-
-    setConfirmation({
+    const confirmation = buildBookingConfirmation({
       charterId,
       packageId: selectedPackageId,
       date,
@@ -58,9 +57,12 @@ export default function CheckoutScreen() {
       email,
       phone,
       paymentMode: singleRef.current?.getPaymentOption() ?? 'full',
-      cardLast4: selectedCard.last4,
-      cardBrand: selectedCard.brand,
+      selectedCard,
     })
+
+    if (!confirmation) return
+
+    setConfirmation(confirmation)
 
     show('Completing your booking...')
     setTimeout(() => {
